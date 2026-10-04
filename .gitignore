@@ -1,0 +1,13 @@
+# Raw Azodi et al. 2019 data from Dryad (CC0); download it yourself, see data/README.md
+data/*_geno.csv
+data/*_pheno.csv
+data/*_CVFs.csv
+data/README.txt
+
+# Run logs and scratch outputs
+results/*.log
+results/*_smoke.csv
+
+.venv/
+__pycache__/
+.DS_Store
