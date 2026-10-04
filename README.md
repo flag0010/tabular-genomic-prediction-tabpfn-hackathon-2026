@@ -34,3 +34,10 @@ The central question is simple:
 
 Work in progress. Methods, results and instructions for reproducing them are coming.
 For the data and how to get it, see [`data/README.md`](data/README.md).
+
+## License
+
+The code in this repository is Apache-2.0 (see [`LICENSE`](LICENSE)). It does not include the
+TabPFN-3.5 model weights, which TabPFN downloads on first use and which are licensed by Prior Labs
+GmbH under the [TabPFN-3.5 Non-Commercial License](https://huggingface.co/Prior-Labs/tabpfn_3_5/blob/main/LICENSE):
+research and evaluation use is free, while commercial or production use needs a license from Prior Labs.
