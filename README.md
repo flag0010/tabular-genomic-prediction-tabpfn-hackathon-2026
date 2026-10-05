@@ -43,16 +43,17 @@ trait values in the held-out 20%, the same measure the paper uses.
 ![TabPFN-3.5 vs the best of 18 published methods for each species and trait](figures/fig1_tabpfn_vs_best.png)
 
 **TabPFN-3.5 is the best of all 19 methods on 11 of the 18 traits**, and in the top three on 12.
-Ranking all 19 methods on every trait, TabPFN has the best average rank, narrowly ahead of the
-paper's own overall winner, an elastic net (EN11):
+Ranking all 19 methods on every trait, TabPFN's median rank is 1. The next best is the paper's
+own overall winner, an elastic net (EN11), at 3.5:
 
-| Method | Mean rank (of 19) | Median rank | Traits where best |
-|---|---|---|---|
-| **TabPFN-3.5** | **3.78** | **1** | **11** |
-| EN11 (elastic net) | 3.83 | 3.5 | 2 |
-| BayesA | 5.50 | 5 | 0 |
-| EN5 (elastic net) | 6.11 | 5.5 | 0 |
-| BRR (Bayesian ridge regression) | 6.28 | 6 | 2 |
+| Method | Median rank (of 19) | Traits where best |
+|---|---|---|
+| **TabPFN-3.5** | **1** | **11** |
+| EN11 (elastic net) | 3.5 | 2 |
+| BayesA | 5 | 0 |
+| EN5 (elastic net) | 5.5 | 0 |
+| BRR (Bayesian ridge regression) | 6 | 2 |
+| rrBLUP (the standard mixed model) | 6 | 0 |
 
 TabPFN does best where it can see every marker. Soy (4,234 markers) and spruce (6,930) fit
 within TabPFN-3.5's 20,000-feature limit, and there TabPFN ranks first on all 6 traits. On soy,

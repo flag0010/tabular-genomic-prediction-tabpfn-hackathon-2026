@@ -7,7 +7,7 @@ Writes:
                              same splits
   results/summary_table.csv  the same, for the main run per species only (MAIN_RUN)
   results/method_ranks.csv   TabPFN (main runs) added to Table S5 as a 19th method: each
-                             method's mean and median rank over the 18 traits and its wins
+                             method's median (and mean) rank over the 18 traits and its wins
 
 The 95% intervals on TabPFN's mean r use the Nadeau-Bengio correction for repeated random
 splits, since the 10 training sets overlap: variance = (1/10 + n_test/n_train) * SD^2.
@@ -98,7 +98,7 @@ def main():
     ranks = allm.groupby("Algorithm")["rank"].agg(
         mean_rank="mean", median_rank="median",
         wins=lambda x: int((x == 1).sum()), top3=lambda x: int((x <= 3).sum()),
-    ).sort_values("mean_rank")
+    ).sort_values(["median_rank", "wins"], ascending=[True, False])
     ranks.to_csv(RESULTS / "method_ranks.csv")
     print(ranks.head(5).round(2).to_string(), "\n")
 
