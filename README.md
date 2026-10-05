@@ -30,9 +30,46 @@ The central question is simple:
 
 > **How well can a general-purpose tabular foundation model perform on genomic prediction, without the specialized machinery traditionally built around this problem?**
 
-## Status
+## Results
 
-Work in progress. Methods, results and instructions for reproducing them are coming.
+We benchmarked TabPFN-3.5 on the six-species, 18-trait dataset of
+[Azodi et al. (2019)](https://doi.org/10.1534/g3.119.400498), who compared 18 established genomic
+prediction methods: mixed models (rrBLUP), Bayesian regressions (BayesA, BayesB, Bayesian LASSO,
+Bayesian ridge regression), elastic nets, support vector machines, random forests, gradient
+boosting and neural networks. For each trait we ran TabPFN on 10 random 80/20 splits of the lines
+and report the mean prediction accuracy: the Pearson correlation between predicted and observed
+trait values in the held-out 20%, the same measure the paper uses.
+
+![TabPFN-3.5 vs the best of 18 published methods for each species and trait](figures/tabpfn_vs_best.png)
+
+**TabPFN-3.5 is the best of all 19 methods on 11 of the 18 traits**, and in the top three on 12.
+Ranking all 19 methods on every trait, TabPFN has the best average rank, narrowly ahead of the
+paper's own overall winner, an elastic net (EN11):
+
+| Method | Mean rank (of 19) | Median rank | Traits where best |
+|---|---|---|---|
+| **TabPFN-3.5** | **3.78** | **1** | **11** |
+| EN11 (elastic net) | 3.83 | 3.5 | 2 |
+| BayesA | 5.50 | 5 | 0 |
+| EN5 (elastic net) | 6.11 | 5.5 | 0 |
+| BRR (Bayesian ridge regression) | 6.28 | 6 | 2 |
+
+TabPFN does best where it can see every marker. Soy (4,234 markers) and spruce (6,930) fit
+within TabPFN-3.5's 20,000-feature limit, and there TabPFN ranks first on all 6 traits. On soy,
+the dataset with the largest test sets (1,003 lines), it improves on the best published method by
+2.5–9% (relative). The other four species have 56,000–245,000 markers, so we give TabPFN a compact
+version: the top 100 principal components of all markers (a genome-wide summary of how related
+the lines are), plus 19,900 raw markers spaced evenly along the genome. There TabPFN ranks first
+on 5 of 12 traits; where it falls short, the gap is mostly within the noise of these small test
+sets (65–102 lines). Per-trait numbers are in
+[`results/summary_table.csv`](results/summary_table.csv).
+
+A note on comparability: Azodi et al. did not publish their exact train/test splits, so our
+splits are different random 80/20 splits of the same lines. As a check, we re-ran rrBLUP on our
+splits for soy and spruce. It lands within 0.003–0.010 of the published rrBLUP on five of six
+traits (spruce wood density is the exception, at +0.039), so our splits are comparable to theirs.
+On identical splits, TabPFN beats rrBLUP on 30 of 30 soy splits.
+
 For the data and how to get it, see [`data/README.md`](data/README.md).
 
 ## License
