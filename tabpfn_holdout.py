@@ -90,12 +90,15 @@ def main():
                     help="total features for --features thin/hybrid (TabPFN-3.5's feature limit)")
     ap.add_argument("--n-pcs", type=int, default=100,
                     help="principal components put first by --features hybrid")
+    ap.add_argument("--ignore-limits", action="store_true",
+                    help="allow more features than TabPFN-3.5's 20,000 limit (ignore_pretraining_limits)")
     ap.add_argument("--n-estimators", default=None,
                     help='ensemble size: an integer, or "cover" (default: TabPFN\'s own)')
     ap.add_argument("--tag", default=None, help="model name in the output (default from options)")
     args = ap.parse_args()
     args.tag = args.tag or {"raw": "TabPFN", "pca": "TabPFN_PCA", "thin": "TabPFN_thin",
                             "hybrid": f"TabPFN_hybrid{args.n_pcs}"}[args.features] + (
+        "_all" if args.ignore_limits else "") + (
         "_cover" if args.n_estimators == "cover" else
         f"_n{args.n_estimators}" if args.n_estimators else "")
 
@@ -149,6 +152,8 @@ def main():
                     (F.shape[1] - n_const) / (FEATURES_PER_ESTIMATOR - n_const)))
             elif args.n_estimators:
                 kw["n_estimators"] = int(args.n_estimators)
+            if args.ignore_limits:
+                kw["ignore_pretraining_limits"] = True
             model = TabPFNRegressor(random_state=rep, **kw)
             model.fit(F[~test], y[~test])
             yhat = model.predict(F[test])
