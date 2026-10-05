@@ -12,34 +12,25 @@ There are two ways to get the data. Both end with the same verification step.
 
 ## Option 1: use the mirror in this repo (recommended)
 
-Dryad blocks scripted downloads, so we mirrored the 19 files here, gzip-compressed, in
-`data/mirror/` (45 MB in total). They come with `git clone`. To unpack and verify them:
+We mirrored the 19 files here, gzip-compressed, in `data/mirror/` (45 MB in total). To unpack and verify them:
 
 ```
 python data/prepare_data.py
 ```
 
 This writes the 19 files into `data/` and checks each one's SHA-256 checksum against
-the checksum Dryad publishes for it. It stops with an error if any file doesn't match.
+the checksum Dryad publishes for it. 
 
 ## Option 2: download from Dryad by hand
 
-1. Open https://doi.org/10.5061/dryad.xksn02vb9 and download all 19 files
-   (or the whole dataset as a zip and unzip it).
-2. Put the files directly in `data/`.
-3. Run `python data/prepare_data.py`. It finds the files already in place, leaves them
-   as they are, and verifies them.
+1. Files at https://doi.org/10.5061/dryad.xksn02vb9
+2. Download and put the files directly in `data/`.
+3. Run `python data/prepare_data.py`. It finds the files already in place and verifies them.
 
 ## Expected checksums
 
-`SHA256SUMS` lists the SHA-256 checksum Dryad publishes for each file (from the Dryad
-API, dataset version 37938). These are checksums of the uncompressed files, so they
-apply to both options. You can also check them without Python:
+`SHA256SUMS` lists the SHA-256 checksum Dryad publishes for each uncompressed file:
 
-```
-cd data && shasum -a 256 -c SHA256SUMS      # macOS
-cd data && sha256sum -c SHA256SUMS          # Linux
-```
 
 | File | Size (bytes) | SHA-256 |
 |---|---:|---|
