@@ -1,8 +1,15 @@
 # Tabular genomic prediction with TabPFN-3.5
 
-An entry to the Prior Labs TabPFN-3.5 Hackathon (2026): predicting plant traits from genetic
-markers by treating genomic prediction as a plain tabular regression problem, benchmarked
-against 18 established methods on six crop and tree species.
+**TL;DR:** We fed raw genetic marker data straight into TabPFN-3.5, with no tuning and no
+genetics-specific modeling, and tested it against 18 established genomic prediction methods on a
+standard published benchmark (6 crop and tree species, 18 traits). **TabPFN was the most accurate
+method on 11 of the 18 traits and had the best median rank of all 19 methods** (1, against 3.5 for
+the runner-up), beating models built specifically for genomic prediction. Wherever the data fit
+within TabPFN-3.5's 20,000-marker limit, it won every trait. In breeding, the rate of genetic
+improvement rises in proportion to prediction accuracy, so even gains of a few percent compound
+into substantial value across a breeding program.
+
+*An entry to the Prior Labs TabPFN-3.5 Hackathon (2026).*
 
 ## Genomic Prediction
 
