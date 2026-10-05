@@ -1,7 +1,7 @@
 """Figure: TabPFN vs the best of 18 published methods, one bar-chart panel per species.
 
 Reads results/summary_table.csv (run summarize_results.py first) and writes
-figures/tabpfn_vs_best.png.
+figures/fig1_tabpfn_vs_best.png.
 
 Usage: python make_figures.py
 """
@@ -75,7 +75,7 @@ def main():
     fig.tight_layout(rect=(0.02, 0, 1, 0.94), w_pad=2, h_pad=3)
 
     FIG_DIR.mkdir(exist_ok=True)
-    out = FIG_DIR / "tabpfn_vs_best.png"
+    out = FIG_DIR / "fig1_tabpfn_vs_best.png"
     fig.savefig(out, dpi=200, facecolor=SURFACE, bbox_inches="tight", pad_inches=0.2)
     print(out)
 

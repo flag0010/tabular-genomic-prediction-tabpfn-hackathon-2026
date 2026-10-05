@@ -40,7 +40,7 @@ boosting and neural networks. For each trait we ran TabPFN on 10 random 80/20 sp
 and report the mean prediction accuracy: the Pearson correlation between predicted and observed
 trait values in the held-out 20%, the same measure the paper uses.
 
-![TabPFN-3.5 vs the best of 18 published methods for each species and trait](figures/tabpfn_vs_best.png)
+![TabPFN-3.5 vs the best of 18 published methods for each species and trait](figures/fig1_tabpfn_vs_best.png)
 
 **TabPFN-3.5 is the best of all 19 methods on 11 of the 18 traits**, and in the top three on 12.
 Ranking all 19 methods on every trait, TabPFN has the best average rank, narrowly ahead of the
