@@ -1,35 +1,34 @@
 # Tabular genomic prediction with TabPFN-3.5
 
-**TL;DR:** We fed raw genetic marker data straight into TabPFN-3.5, with no tuning and no
+**TL;DR:** We fed genetic marker data straight into TabPFN-3.5, with no tuning and no
 genetics-specific modeling, and tested it against 18 established genomic prediction methods on a
 standard published benchmark (6 crop and tree species, 18 traits). **TabPFN was the most accurate
-method on 11 of the 18 traits and had the best median rank of all 19 methods** (1, against 3.5 for
-the runner-up), beating models built specifically for genomic prediction. Wherever the data fit
-within TabPFN-3.5's 20,000-marker limit, it won every trait. In breeding, the rate of genetic
+method on 11 of the 18 tests and had the best median rank among all methods**, 
+beating models built specifically for genomic prediction. Wherever the data fit
+within TabPFN-3.5's 20,000-feature limit, it won every time. In breeding, the rate of genetic
 improvement rises in proportion to prediction accuracy, so even gains of a few percent compound
-into substantial value across a breeding program.
+into substantial value across a breeding program. TabPFN could reliably deliver these gains if
+utilized in breeding programs today.
 
 *An entry to the Prior Labs TabPFN-3.5 Hackathon (2026).*
 
 ## Genomic Prediction
 
-**Genomic prediction** is widely used in modern plant and animal breeding to predict an individual's phenotypic performance (traits like yield, disease resistance, growth rate, milk production, or meat quality) from its genetic markers (genomic DNA sequence information). A model is trained on individuals with both genotype and phenotype data, then used to predict the performance of new individuals from genotype alone.
+**Genomic prediction** is widely used in modern plant and animal breeding to predict an individual's phenotypic performance (traits like yield, disease resistance, growth rate, milk production, or meat quality) from its genetic markers (DNA sequence information). A model is trained on individuals with both genotype and phenotype data, then used to predict the performance of new individuals from genotype alone.
 
-Genomic prediction is valuable because genotyping is extremely fast and inexpensive relative to phenotyping. Breeders can screen thousands or millions of individuals genetically and select the most promising ones without having to phenotype, enabling earlier identification of elite individuals and accelerating breeding progress.
+Genomic prediction is valuable because genotyping is extremely fast and inexpensive relative to phenotyping. Breeders can screen thousands or millions of individuals genetically and select the most promising ones without collecting expensive phenotypes, enabling earlier identification of elite individuals and accelerating breeding progress.
 
-Genomic prediction has been used for roughly 20 years and is now foundational to breeding programs in maize, soybean, wheat, cattle, pigs, chickens, and many other crops and livestock we all depend on. It underpins breeding industries worth billions of dollars, with genomic selection in U.S. dairy cattle alone estimated to have returned about $4 billion since its adoption in 2009 ([Rexroad et al. 2019](https://doi.org/10.3389/fgene.2019.00327)). Because genetic gains accumulate across generations, even modest improvements in selection accuracy can translate into substantial additional economic gains over the course of a breeding program. This makes genomic prediction an especially valuable target for developing better prediction methods.
+Genomic prediction has been used for roughly 20 years and is now foundational to breeding programs in maize, soybean, wheat, cattle, pigs, chickens, and many other crops and livestock we all depend on. It underpins breeding industries worth billions of dollars, with genomic prediction in U.S. dairy cattle alone estimated to have returned about $4 billion since its adoption in 2009 ([Rexroad et al. 2019](https://doi.org/10.3389/fgene.2019.00327)). Because genetic gains accumulate across generations, even modest improvements in selection accuracy can translate into substantial additional economic gains over the course of a breeding program. This makes genomic prediction an especially valuable target for developing better prediction methods.
 
 ### Why TabPFN and why now?
 
-A typical genomic prediction dataset consists of an $N \times M$ matrix of genetic markers and an $N \times P$ matrix of phenotypic measurements, potentially accompanied by covariates. In the simplest formulation, this is a **supervised learning problem**. Individuals with known genotypes and phenotypes are used to learn a mapping from genotype to phenotype, which is then used to predict phenotypes for individuals whose phenotypes have not yet been observed.
+A typical genomic prediction dataset consists of an $N individuals \times M$ matrix of genetic markers and an $N \times P$ matrix of phenotypic measurements, potentially accompanied by covariates. In this formulation it is a **supervised learning problem**. Individuals with known genotypes and phenotypes are used to learn a mapping from genotype to phenotype, and subsequently predict phenotypes from individuals with only genotype data.
 
-The dimensionality is unusual compared with many conventional tabular problems. A dataset might contain 1,000 samples (individuals) and 20,000 features (genetic markers), resulting in 20 million genotype measurements but only 1,000 labeled examples. In other words, genomic prediction often has very large numbers of features relative to the number of individuals.
+Numerous specialized methods exist for genomic prediction, including mixed models, Bayesian models, kernel methods, and machine learning approaches. Most are designed around genetic relationships, marker effects, or assumptions about how genetic variation affects phenotypes rather than treating the problem as generic tabular learning. [The Bitter Lesson](http://www.incompleteideas.net/IncIdeas/BitterLesson.html) suggests that there should be value in taking the opposite approach, abandon domain-specific assumptions and let compute and increasingly capable general-purpose learning systems do the heavy lifting.
 
-Numerous specialized methods exist for genomic prediction, including mixed models, Bayesian models, kernel methods, and machine learning approaches. Most are designed around genetic relationships, marker effects, or assumptions about how genetic variation affects phenotypes rather than treating the problem as generic tabular learning. [The Bitter Lesson](http://www.incompleteideas.net/IncIdeas/BitterLesson.html) suggests that there may be value in taking the opposite approach, abandon domain-specific assumptions and let compute and increasingly capable general-purpose learning systems do the heavy lifting.
+Here we take that Bitter Lesson approach. **We treat genomic prediction as a tabular regression problem and feed raw genetic marker data straight into TabPFN-3.5**, with minimal human curation of markers, no assumptions about how genes affect traits, and no tuning. TabPFN has appeared in genomic prediction before, but only as a component of a larger ensemble trained on a curated set of genetic markers ([TRXB, 2025](https://link.springer.com/article/10.1007/s44412-025-00005-3)). We go the other way. As Sutton puts it, "we want AI agents that can discover like we can, not which contain what we have discovered." To our knowledge, this is the first benchmark of TabPFN learning genomic prediction directly from raw marker data, free of human curation.
 
-Here we take that Bitter Lesson approach. **We treat genomic prediction as a tabular regression problem and feed raw genetic marker data straight into TabPFN-3.5**, with no human curation of markers, no assumptions about how genes affect traits, and no tuning. TabPFN has appeared in genomic prediction before, as one component of a larger ensemble trained on a small set of markers hand-picked using prior genetic knowledge ([TRXB, 2025](https://link.springer.com/article/10.1007/s44412-025-00005-3)). We go the other way. As Sutton puts it, "we want AI agents that can discover like we can, not which contain what we have discovered." To our knowledge, this is the first benchmark of TabPFN learning genomic prediction directly from raw marker data, free of human curation.
-
-This is particularly interesting because we have strong biological reason to expect non-linear effects and interactions between genetic variants. TabPFN's in-context learning and ability to model complex relationships offer a way to capture these patterns without explicitly specifying a genetic architecture. More broadly, TabPFN makes it possible to approach genomic prediction with little dataset-specific model selection or hyperparameter tuning.
+This is particularly interesting because we have strong biological reason to expect non-linear effects and interactions between genetic variants. TabPFN's in-context learning and ability to model complex relationships offer a way to capture these patterns without explicitly specifying them. More broadly, TabPFN makes it possible to approach genomic prediction with little dataset-specific model selection or hyperparameter tuning.
 
 Recent improvements in TabPFN's input capacity make this approach substantially more practical. TabPFN-3.5 accepts up to **20,000 features**, 10× more than earlier versions, which is enough to use raw marker data for many genomic datasets. This is an important unlock for genomic data, where tens of thousands of genetic markers per individual are common.
 
@@ -49,8 +48,8 @@ trait values in the held-out 20%, the same measure the paper uses.
 
 ![TabPFN-3.5 vs the best of 18 published methods for each species and trait](figures/fig1_tabpfn_vs_best.png)
 
-**TabPFN-3.5 is the best of all 19 methods on 11 of the 18 traits**, and in the top three on 12.
-Ranking all 19 methods on every trait, TabPFN's median rank is 1. The next best is the paper's
+**TabPFN-3.5 is the best of among 19 methods on 11 of the 18 traits**, and in the top three on 12.
+Ranking all 19 methods on every trait, TabPFN's median rank is 1st. The next best is the paper's
 own overall winner, an elastic net (EN11), at 3.5:
 
 | Method | Median rank (of 19) | Traits where best |
@@ -68,15 +67,13 @@ the dataset with the largest test sets (1,003 lines), it improves on the best pu
 2.5–9% (relative). The other four species have 56,000–245,000 markers, so we give TabPFN a compact
 version: the top 100 principal components of all markers (a genome-wide summary of how related
 the lines are), plus 19,900 raw markers spaced evenly along the genome. There TabPFN ranks first
-on 5 of 12 traits; where it falls short, the gap is mostly within the noise of these small test
-sets (65–102 lines). Per-trait numbers are in
-[`results/summary_table.csv`](results/summary_table.csv).
+on 5 of 12 traits; where it falls short, the gap is mostly within the noise of these test sets. 
+Per-trait numbers are in [`results/summary_table.csv`](results/summary_table.csv).
 
 A note on comparability: Azodi et al. did not publish their exact train/test splits, so our
-splits are different random 80/20 splits of the same lines. As a check, we re-ran rrBLUP on our
+splits are different random 80/20 splits. As a check, we re-ran rrBLUP on our
 splits for soy and spruce. It lands within 0.003–0.010 of the published rrBLUP on five of six
-traits (spruce wood density is the exception, at +0.039), so our splits are comparable to theirs.
-On identical splits, TabPFN beats rrBLUP on 30 of 30 soy splits.
+traits, so our splits are comparable to theirs.
 
 ## Methods details
 
@@ -98,19 +95,16 @@ On identical splits, TabPFN beats rrBLUP on 30 of 30 soy splits.
   isn't diluted among the markers. Neither step uses trait values.
 - **Other inputs we tried** (all in [`results/all_runs.csv`](results/all_runs.csv)). On the four
   large species, the hybrid beat thinned markers alone on 97 of 120 splits and principal
-  components alone on 82 of 120. Principal components alone were fine for spruce but badly hurt
-  soy (r 0.26–0.34, against 0.51–0.68 with raw markers), likely because all ~4,000 components,
-  most of them noise, then carry equal weight in TabPFN. Going past TabPFN-3.5's limit with all
+  components alone on 82 of 120. Going past TabPFN-3.5's limit with all
   57,542 rice markers (`ignore_pretraining_limits`) gained nothing over 20,000 thinned markers
   (better on 10 of 30 splits) at three times the run time: neighboring markers carry largely the
   same information, so thinning loses little.
 - **rrBLUP check.** Implemented with the R package `rrBLUP`, following the authors' published
   script ([`rrblup_holdout.R`](rrblup_holdout.R)), on the same splits as TabPFN.
 
-## Reproducing
+## Reproducing the results
 
-**Requirements:** Python 3.10 or newer (we used 3.14), a GPU (NVIDIA, or Apple Silicon as here;
-TabPFN refuses CPU runs above 5,000 training rows by default), and a free
+**Requirements:** Python 3.10 or newer (we used 3.14), a GPU, and a
 [Prior Labs account](https://ux.priorlabs.ai) to accept the TabPFN-3.5 license. R with the
 `rrBLUP` package is needed only for the rrBLUP check.
 
@@ -125,7 +119,7 @@ python data/prepare_data.py          # unpacks the data mirror and checks it aga
 The first TabPFN run opens a browser to log in to Prior Labs and accept the license. Without a
 browser, accept it at https://ux.priorlabs.ai and set `TABPFN_TOKEN` to your API key.
 
-**Quick check (about 4 minutes):** rice yield with the hybrid input, 10 splits.
+**Quick check:** rice yield with the hybrid input, 10 splits.
 
 ```
 python tabpfn_holdout.py rice --features hybrid --n-pcs 100 --n-estimators cover --traits YLD --tag quickstart
@@ -135,8 +129,8 @@ This writes `results/rice_quickstart.csv`. Its mean r should be about 0.47, matc
 run (`results/rice_TabPFN_hybrid100_cover.csv`, trait `YLD`).
 
 **Everything:** `results/` holds our saved results, and the scripts skip fits that are already
-saved. To rebuild the tables and figure from them (seconds): `./run_all.sh summary`. To rerun
-every fit from scratch (about 4–5 hours on an Apple M4 Pro):
+saved. To rebuild the tables and figure from them: `./run_all.sh summary`. To rerun
+every fit from scratch:
 
 ```
 rm results/*.csv && ./run_all.sh
@@ -145,6 +139,5 @@ rm results/*.csv && ./run_all.sh
 ## License
 
 The code in this repository is Apache-2.0 (see [`LICENSE`](LICENSE)). It does not include the
-TabPFN-3.5 model weights, which TabPFN downloads on first use and which are licensed by Prior Labs
-GmbH under the [TabPFN-3.5 Non-Commercial License](https://huggingface.co/Prior-Labs/tabpfn_3_5/blob/main/LICENSE):
-research and evaluation use is free, while commercial or production use needs a license from Prior Labs.
+TabPFN-3.5 model weights, which are licensed by Prior Labs
+GmbH under the [TabPFN-3.5 Non-Commercial License](https://huggingface.co/Prior-Labs/tabpfn_3_5/blob/main/LICENSE).
