@@ -32,6 +32,7 @@ INPUTS = {
     "TabPFN_PCA": "PCA",
     "TabPFN_thin_cover": "thinned markers",
     "TabPFN_hybrid100_cover": "100 PCs + thinned markers",
+    "TabPFN_all_cover": "all markers, past the 20k limit",
 }
 
 # Main run per species: all raw markers where they fit TabPFN-3.5, else 100 PCs + thinned markers

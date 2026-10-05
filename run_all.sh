@@ -22,6 +22,8 @@ if [[ "$what" == tabpfn || "$what" == all ]]; then
   for sp in $LARGE; do
     python tabpfn_holdout.py "$sp" --features hybrid --n-pcs 100 --n-estimators cover
   done
+  # Rice with all 57,542 markers, past TabPFN-3.5's 20,000-feature limit (comparison)
+  python tabpfn_holdout.py rice --features raw --ignore-limits --n-estimators cover
 fi
 
 if [[ "$what" == rrblup || "$what" == all ]]; then

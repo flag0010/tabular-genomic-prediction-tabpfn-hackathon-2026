@@ -78,7 +78,69 @@ splits for soy and spruce. It lands within 0.003–0.010 of the published rrBLUP
 traits (spruce wood density is the exception, at +0.039), so our splits are comparable to theirs.
 On identical splits, TabPFN beats rrBLUP on 30 of 30 soy splits.
 
-For the data and how to get it, see [`data/README.md`](data/README.md).
+## Methods details
+
+- **Data.** Genotypes, phenotypes and cross-validation folds from Azodi et al. (2019), unchanged
+  (see [`data/README.md`](data/README.md)). Markers are coded -1/0/1.
+- **Splits.** For each trait, replicate *i* (1–10) holds out the lines in fold 1 of column `cv_i`
+  of the published fold file (20% of lines) and trains on the rest. We report the mean Pearson r
+  over the 10 replicates, as the paper does.
+- **Model.** `TabPFNRegressor` from `tabpfn` 9.1.0 (TabPFN-3.5 weights) with default settings and
+  no tuning; `random_state` is the replicate number. The only setting we change is the number of
+  ensemble members: TabPFN-3.5 gives each member a random 768 of the input columns, and we use
+  enough members that every column is seen at least once.
+- **Soy and spruce: raw markers.** All 4,234 (soy) and 6,930 (spruce) markers go in as they are.
+- **Rice, sorghum, maize and switchgrass: 100 PCs + thinned markers.** These have 56,000–245,000
+  markers, more than TabPFN-3.5 accepts. Each split gets (1) the top 100 principal components of
+  all markers, fit on the training lines only, and (2) 19,900 raw markers, chosen evenly along the
+  genome after sorting by chromosome and position. TabPFN's `constant_and_balanced` feature
+  subsampling puts the 100 components into every ensemble member, so this genome-wide summary
+  isn't diluted among the markers. Neither step uses trait values.
+- **Other inputs we tried** (all in [`results/all_runs.csv`](results/all_runs.csv)). On the four
+  large species, the hybrid beat thinned markers alone on 97 of 120 splits and principal
+  components alone on 82 of 120. Principal components alone were fine for spruce but badly hurt
+  soy (r 0.26–0.34, against 0.51–0.68 with raw markers), likely because all ~4,000 components,
+  most of them noise, then carry equal weight in TabPFN. Going past TabPFN-3.5's limit with all
+  57,542 rice markers (`ignore_pretraining_limits`) gained nothing over 20,000 thinned markers
+  (better on 10 of 30 splits) at three times the run time: neighboring markers carry largely the
+  same information, so thinning loses little.
+- **rrBLUP check.** Implemented with the R package `rrBLUP`, following the authors' published
+  script ([`rrblup_holdout.R`](rrblup_holdout.R)), on the same splits as TabPFN.
+
+## Reproducing
+
+**Requirements:** Python 3.10 or newer (we used 3.14), a GPU (NVIDIA, or Apple Silicon as here;
+TabPFN refuses CPU runs above 5,000 training rows by default), and a free
+[Prior Labs account](https://ux.priorlabs.ai) to accept the TabPFN-3.5 license. R with the
+`rrBLUP` package is needed only for the rrBLUP check.
+
+```
+git clone https://github.com/flag0010/tabular-genomic-prediction-tabpfn-hackathon-2026.git
+cd tabular-genomic-prediction-tabpfn-hackathon-2026
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+python data/prepare_data.py          # unpacks the data mirror and checks it against Dryad
+```
+
+The first TabPFN run opens a browser to log in to Prior Labs and accept the license. Without a
+browser, accept it at https://ux.priorlabs.ai and set `TABPFN_TOKEN` to your API key.
+
+**Quick check (about 4 minutes):** rice yield with the hybrid input, 10 splits.
+
+```
+python tabpfn_holdout.py rice --features hybrid --n-pcs 100 --n-estimators cover --traits YLD --tag quickstart
+```
+
+This writes `results/rice_quickstart.csv`. Its mean r should be about 0.47, matching our saved
+run (`results/rice_TabPFN_hybrid100_cover.csv`, trait `YLD`).
+
+**Everything:** `results/` holds our saved results, and the scripts skip fits that are already
+saved. To rebuild the tables and figure from them (seconds): `./run_all.sh summary`. To rerun
+every fit from scratch (about 4–5 hours on an Apple M4 Pro):
+
+```
+rm results/*.csv && ./run_all.sh
+```
 
 ## License
 
