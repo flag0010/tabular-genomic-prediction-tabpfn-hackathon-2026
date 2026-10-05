@@ -7,8 +7,8 @@ method on 11 of the 18 tests and had the best median rank among all methods**,
 beating models built specifically for genomic prediction. Wherever the data fit
 within TabPFN-3.5's 20,000-feature limit, it won every time. In breeding, the rate of genetic
 improvement rises in proportion to prediction accuracy, so even gains of a few percent compound
-into substantial value across a breeding program. TabPFN could reliably deliver these gains if
-utilized in breeding programs today.
+into substantial value across a breeding program. These are gains TabPFN could deliver in
+breeding programs today.
 
 *An entry to the Prior Labs TabPFN-3.5 Hackathon (2026).*
 
@@ -26,7 +26,7 @@ A typical genomic prediction dataset consists of an $N \times M$ matrix of genet
 
 Numerous specialized methods exist for genomic prediction, including mixed models, Bayesian models, kernel methods, and machine learning approaches. Most are designed around genetic relationships, marker effects, or assumptions about how genetic variation affects phenotypes rather than treating the problem as generic tabular learning. [The Bitter Lesson](http://www.incompleteideas.net/IncIdeas/BitterLesson.html) suggests that there should be value in taking the opposite approach: abandon domain-specific assumptions and let compute and increasingly capable general-purpose learning systems do the heavy lifting.
 
-Here we take that Bitter Lesson approach. **We treat genomic prediction as a tabular regression problem and feed raw genetic marker data straight into TabPFN-3.5**, with minimal human curation of markers, no assumptions about how genes affect traits, and no tuning. TabPFN has appeared in genomic prediction before, but only as a component of a larger ensemble trained on a curated set of genetic markers ([TRXB, 2025](https://link.springer.com/article/10.1007/s44412-025-00005-3)). We go the other way. As Sutton puts it, "we want AI agents that can discover like we can, not which contain what we have discovered." To our knowledge, this is the first benchmark of TabPFN learning genomic prediction directly from raw marker data, free of human curation.
+Here we take that Bitter Lesson approach. **We treat genomic prediction as a tabular regression problem and feed raw genetic marker data straight into TabPFN-3.5**, with minimal human curation of markers, no assumptions about how genes affect traits, and no tuning. TabPFN has appeared in genomic prediction before, but only as a component of a larger ensemble trained on a curated set of genetic markers ([TRXB, 2025](https://link.springer.com/article/10.1007/s44412-025-00005-3)). We go the other way. As Sutton puts it, "we want AI agents that can discover like we can, not which contain what we have discovered." To our knowledge, this is the first benchmark of TabPFN learning genomic prediction directly from raw marker data, with minimal human curation.
 
 This is particularly interesting because we have strong biological reason to expect non-linear effects and interactions between genetic variants. TabPFN's in-context learning and ability to model complex relationships offer a way to capture these patterns without explicitly specifying them. More broadly, TabPFN makes it possible to approach genomic prediction with little dataset-specific model selection or hyperparameter tuning.
 
@@ -48,11 +48,11 @@ trait values in the held-out 20%, the same measure the paper uses.
 
 ![TabPFN-3.5 vs the best of 18 published methods for each species and trait](figures/fig1_tabpfn_vs_best.png)
 
-**TabPFN-3.5 is the best of 19 methods on 11 of the 18 traits**, and in the top three on 12.
-Ranking all 19 methods on every trait, TabPFN's median rank is 1st. The next best is the paper's
+**TabPFN-3.5 is the best of 19 methods on 11 of the 18 tests**, and in the top three on 12.
+Ranking all 19 methods on every test, TabPFN's median rank is 1st. The next best is the paper's
 own overall winner, an elastic net (EN11), at 3.5:
 
-| Method | Median rank (of 19) | Traits where best |
+| Method | Median rank (of 19) | Tests where best |
 |---|---|---|
 | **TabPFN-3.5** | **1** | **11** |
 | EN11 (elastic net) | 3.5 | 2 |
@@ -62,18 +62,18 @@ own overall winner, an elastic net (EN11), at 3.5:
 | rrBLUP (the standard mixed model) | 6 | 0 |
 
 TabPFN does best where it can see every marker. Soy (4,234 markers) and spruce (6,930) fit
-within TabPFN-3.5's 20,000-feature limit, and there TabPFN ranks first on all 6 traits. On soy,
+within TabPFN-3.5's 20,000-feature limit, and there TabPFN ranks first on all 6 tests. On soy,
 the dataset with the largest test sets (1,003 lines), it improves on the best published method by
 2.5–9% (relative). The other four species have 56,000–245,000 markers, so we give TabPFN a compact
 version: the top 100 principal components of all markers (a genome-wide summary of how related
 the lines are), plus 19,900 raw markers spaced evenly along the genome. There TabPFN ranks first
-on 5 of 12 traits; where it falls short, the gap is mostly within the noise of these test sets.
+on 5 of 12 tests; where it falls short, the gap is mostly within the noise of these test sets.
 Per-trait numbers are in [`results/summary_table.csv`](results/summary_table.csv).
 
 A note on comparability: Azodi et al. did not publish their exact train/test splits, so our
 splits are different random 80/20 splits. As a check, we re-ran rrBLUP on our
 splits for soy and spruce. It lands within 0.003–0.010 of the published rrBLUP on five of six
-traits, so our splits are comparable to theirs.
+tests, so our splits are comparable to theirs.
 
 ## Methods details
 
