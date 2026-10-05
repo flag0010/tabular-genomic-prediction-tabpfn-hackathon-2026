@@ -37,14 +37,10 @@ def main():
         x = range(len(g))
         for i, row in g.iterrows():
             win = row.tabpfn_r > row.best_published_r
-            # TabPFN: mean with corrected 95% interval (the 2px edge keeps a gap between bars)
+            # TabPFN: mean of 10 splits (the 2px edge keeps a gap between bars)
             ax.bar(i - width / 2, row.tabpfn_r, width, color=TABPFN, edgecolor=SURFACE, lw=2)
-            ax.errorbar(i - width / 2, row.tabpfn_r,
-                        yerr=[[row.tabpfn_r - row.tabpfn_ci95_low],
-                              [row.tabpfn_ci95_high - row.tabpfn_r]],
-                        fmt="none", ecolor=TEXT, elinewidth=1.2, capsize=3)
             if win:
-                ax.text(i - width / 2, row.tabpfn_ci95_high + 0.02, "★", ha="center",
+                ax.text(i - width / 2, row.tabpfn_r + 0.02, "★", ha="center",
                         va="bottom", fontsize=11, color=TEXT)
             # Best published method, labeled with its name
             ax.bar(i + width / 2, row.best_published_r, width, color=BEST, edgecolor=SURFACE, lw=2)
@@ -69,7 +65,7 @@ def main():
                   fontsize=10, color=TEXT_2)
 
     handles = [plt.Rectangle((0, 0), 1, 1, color=TABPFN,
-                          label="TabPFN-3.5 (mean of 10 splits, 95% interval)"),
+                          label="TabPFN-3.5 (mean of 10 splits)"),
                plt.Rectangle((0, 0), 1, 1, color=BEST,
                           label="Best of 18 published methods (Azodi et al. 2019)")]
     fig.legend(handles=handles, loc="upper left", bbox_to_anchor=(0.01, 0.995), ncol=2,
